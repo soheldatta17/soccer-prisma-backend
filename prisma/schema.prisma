@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id  @default(cuid())
+  name       String    @db.VarChar(64)
+  email      String    @unique @db.VarChar(128)
+  password   String    @db.VarChar(64)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  teamsOwned Team[]   @relation("TeamOwner")
+  players    Player[]
+}
+
+model Team {
+  id           String    @id  @default(cuid())
+  name         String    @db.VarChar(128)
+  location     String    @db.VarChar(128)
+  league       String    @db.VarChar(64)
+  founded      Int?      // Year founded
+  ownerId      String
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  owner        User      @relation("TeamOwner", fields: [ownerId], references: [id])
+  players      Player[]
+}
+
+model Role {
+  id         String    @id  @default(cuid())
+  name       String    @unique @db.VarChar(64)
+  scopes     String[]  @db.Text
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  players    Player[]
+}
+
+model Player {
+  id         String    @id   @default(cuid())
+  teamId     String
+  userId     String
+  roleId     String
+  position   String    @db.VarChar(32)  // e.g., "Forward", "Midfielder", "Defender", "Goalkeeper"
+  jerseyNumber Int?
+  created_at DateTime  @default(now())
+
+  team      Team      @relation(fields: [teamId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+  role      Role      @relation(fields: [roleId], references: [id])
+
+  @@unique([teamId, userId])
+}
