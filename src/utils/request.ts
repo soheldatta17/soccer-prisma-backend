@@ -1,3 +1,15 @@
+/**
+ * Request Utility
+ * Part of Soccer Team Management API
+ * 
+ * Provides request handling and conversion utilities.
+ * 
+ * @author Sohel Datta <soheldatta17@gmail.com>
+ * @copyright Copyright (c) 2024 Sohel Datta
+ * @license MIT
+ * @repository https://github.com/soheldatta17/soccer-prisma-backend
+ */
+
 import type { Request as ExpressRequest } from 'express';
 
 export function convertToWebRequest(req: ExpressRequest): globalThis.Request {

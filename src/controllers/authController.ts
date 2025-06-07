@@ -1,3 +1,15 @@
+/**
+ * Authentication Controller
+ * Part of Soccer Team Management API
+ * 
+ * Handles user authentication, registration, and user management operations.
+ * 
+ * @author Sohel Datta <soheldatta17@gmail.com>
+ * @copyright Copyright (c) 2024 Sohel Datta
+ * @license MIT
+ * @repository https://github.com/soheldatta17/soccer-prisma-backend
+ */
+
 import { signupUser, signinUser } from "../services/authService";
 import { sendJSON } from "../utils/response";
 import { PrismaClient } from "@prisma/client";

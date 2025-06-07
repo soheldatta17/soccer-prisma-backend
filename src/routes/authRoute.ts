@@ -1,3 +1,13 @@
+/**
+ * Authentication Routes
+ * Part of Soccer Team Management API
+ * 
+ * @author Sohel Datta <soheldatta17@gmail.com>
+ * @copyright Copyright (c) 2024 Sohel Datta
+ * @license MIT
+ * @repository https://github.com/soheldatta17/soccer-prisma-backend
+ */
+
 import { signupController, signinController, getUserById } from "../controllers/authController";
 import { authenticate } from "../middlewares/authMiddleware";
 

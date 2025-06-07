@@ -411,4 +411,15 @@ Common error responses:
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+**Sohel Datta**
+
+* GitHub: [@soheldatta17](https://github.com/soheldatta17)
+* Email: soheldatta17@gmail.com
+
+## ©️ Copyright
+
+Copyright © 2024 [Sohel Datta](https://github.com/soheldatta17). All rights reserved.

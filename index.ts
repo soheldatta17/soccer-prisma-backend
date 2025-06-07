@@ -1,3 +1,12 @@
+/**
+ * Soccer Team Management API
+ * 
+ * @author Sohel Datta <soheldatta17@gmail.com>
+ * @copyright Copyright (c) 2024 Sohel Datta
+ * @license MIT
+ * @repository https://github.com/soheldatta17/soccer-prisma-backend
+ */
+
 import express from 'express';
 import cors from 'cors';
 import { roleRoutes } from "./src/routes/roleRoute";

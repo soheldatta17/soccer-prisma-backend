@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "type": "module",
   "private": true,
+  "author": {
+    "name": "Sohel Datta",
+    "email": "soheldatta17@gmail.com",
+    "url": "https://github.com/soheldatta17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soheldatta17/soccer-prisma-backend.git"
+  },
+  "license": "MIT",
   "scripts": {
     "start": "tsx index.ts",
     "seed": "tsx prisma/seed.ts",

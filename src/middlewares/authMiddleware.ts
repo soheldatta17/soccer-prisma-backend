@@ -1,3 +1,15 @@
+/**
+ * Authentication Middleware
+ * Part of Soccer Team Management API
+ * 
+ * Provides authentication and authorization middleware functions.
+ * 
+ * @author Sohel Datta <soheldatta17@gmail.com>
+ * @copyright Copyright (c) 2024 Sohel Datta
+ * @license MIT
+ * @repository https://github.com/soheldatta17/soccer-prisma-backend
+ */
+
 import { verifyJWT } from "../validators/jwt";
 
 const rawSecret = process.env.JWT_SECRET;

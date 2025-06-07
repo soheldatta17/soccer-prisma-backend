@@ -1,3 +1,15 @@
+/**
+ * Player Management Controller
+ * Part of Soccer Team Management API
+ * 
+ * Handles player registration, updates, and player-related operations.
+ * 
+ * @author Sohel Datta <soheldatta17@gmail.com>
+ * @copyright Copyright (c) 2024 Sohel Datta
+ * @license MIT
+ * @repository https://github.com/soheldatta17/soccer-prisma-backend
+ */
+
 import { PrismaClient } from "@prisma/client";
 import { sendJSON } from "../utils/response";
 import { generateId } from "../utils/id";
