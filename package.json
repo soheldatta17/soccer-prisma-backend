@@ -6,8 +6,9 @@
   "scripts": {
     "start": "tsx index.ts",
     "seed": "tsx prisma/seed.ts",
-    "build": "tsc --noEmit false --incremental false",
-    "dev": "tsx watch index.ts"
+    "build": "prisma generate && tsc --noEmit false --incremental false",
+    "dev": "tsx watch index.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0",
