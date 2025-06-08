@@ -32,38 +32,6 @@ A comprehensive REST API for managing professional soccer teams, players, and st
 - [Node.js](https://nodejs.org) (v16 or higher)
 - [PostgreSQL](https://www.postgresql.org) database
 
-## 🔧 Setup
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd soccer-manager
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create a `.env` file in the root directory with the following variables:
-```env
-DATABASE_URL="postgresql://username:password@localhost:5432/soccer_manager"
-JWT_SECRET="your-secret-key"
-```
-
-4. Initialize the database:
-```bash
-npx prisma generate
-npx prisma db push
-```
-
-5. Start the server:
-```bash
-npm start
-```
-
-The server will start running on `http://localhost:3000`
-
 ## 📚 API Documentation
 
 ### Authentication APIs

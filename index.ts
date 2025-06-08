@@ -110,6 +110,94 @@ app.use('/v1/player', async (req, res, next) => {
   }
 });
 
+// Root route - API Documentation
+app.get('/', (req, res) => {
+  res.json({
+    name: "Soccer Team Management API",
+    version: "1.0.0",
+    description: "A comprehensive REST API for managing professional soccer teams, players, and staff.",
+    author: {
+      name: "Sohel Datta",
+      email: "soheldatta17@gmail.com",
+      github: "https://github.com/soheldatta17"
+    },
+    documentation: {
+      endpoints: {
+        auth: {
+          signup: {
+            method: "POST",
+            path: "/v1/auth/signup",
+            description: "Register a new user (player, staff, or manager)"
+          },
+          signin: {
+            method: "POST",
+            path: "/v1/auth/signin",
+            description: "Authenticate and receive access token"
+          }
+        },
+        team: {
+          create: {
+            method: "POST",
+            path: "/v1/team",
+            description: "Create a new soccer team"
+          },
+          getAll: {
+            method: "GET",
+            path: "/v1/team",
+            description: "List all teams with pagination"
+          },
+          getDetails: {
+            method: "GET",
+            path: "/v1/team/:teamId",
+            description: "Get detailed information about a specific team"
+          },
+          getPlayers: {
+            method: "GET",
+            path: "/v1/team/:teamId/players",
+            description: "Get all players in a team"
+          }
+        },
+        player: {
+          add: {
+            method: "POST",
+            path: "/v1/player",
+            description: "Add a player to a team with position and number"
+          },
+          update: {
+            method: "PUT",
+            path: "/v1/player/:playerId",
+            description: "Update player information"
+          }
+        }
+      },
+      features: [
+        "Complete Soccer Team Management",
+        "Player Management",
+        "Staff Management",
+        "Role-based Access Control",
+        "JWT Authentication",
+        "RESTful API Architecture",
+        "PostgreSQL Database"
+      ],
+      playerPositions: [
+        "Forward",
+        "Midfielder",
+        "Defender",
+        "Goalkeeper"
+      ],
+      teamRoles: [
+        "Team Manager",
+        "Head Coach",
+        "Assistant Coach",
+        "Team Captain",
+        "Player"
+      ]
+    },
+    repository: "https://github.com/soheldatta17/soccer-prisma-backend",
+    license: "MIT"
+  });
+});
+
 // Error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
