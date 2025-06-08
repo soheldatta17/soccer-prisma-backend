@@ -12,11 +12,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import { roleRoutes } from "./src/routes/roleRoute";
-import { authRoutes } from "./src/routes/authRoute";
-import { teamRoutes } from "./src/routes/teamRoute";
-import { playerRoutes } from "./src/routes/playerRoute";
-import { convertToWebRequest } from "./src/utils/request";
+import { roleRoutes } from "./src/routes/roleRoute.js";
+import { authRoutes } from "./src/routes/authRoute.js";
+import { teamRoutes } from "./src/routes/teamRoute.js";
+import { playerRoutes } from "./src/routes/playerRoute.js";
+import { convertToWebRequest } from "./src/utils/request.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
