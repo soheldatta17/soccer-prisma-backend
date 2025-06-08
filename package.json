@@ -16,7 +16,7 @@
   "scripts": {
     "start": "tsx index.ts",
     "seed": "tsx prisma/seed.ts",
-    "build": "prisma generate && tsc --noEmit false --incremental false",
+    "build": "prisma generate",
     "dev": "tsx watch index.ts",
     "postinstall": "prisma generate"
   },
