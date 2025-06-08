@@ -2,8 +2,31 @@
   "version": 2,
   "builds": [
     {
-      "src": "dist/index.js",
+      "src": "index.ts",
       "use": "@vercel/node"
     }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/v1/(.*)",
+      "dest": "index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "index.ts"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "env": true
+    }
+  }
 }
