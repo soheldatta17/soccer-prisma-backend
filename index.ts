@@ -9,239 +9,145 @@
 
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
 import { roleRoutes } from "./src/routes/roleRoute.js";
 import { authRoutes } from "./src/routes/authRoute.js";
 import { teamRoutes } from "./src/routes/teamRoute.js";
 import { playerRoutes } from "./src/routes/playerRoute.js";
-import { convertToWebRequest } from "./src/utils/request.js";
+import path from 'path';
+import fs from 'fs';
+import { marked } from 'marked';
 
 const app = express();
+
+// Only essential middleware
+app.use(express.json());
+app.use(cors());
+
+// Basic routes
+app.get('/', (_, res) => {
+  const readmePath = path.join(process.cwd(), 'README.md');
+  const readmeContent = fs.readFileSync(readmePath, 'utf-8');
+  const htmlContent = marked(readmeContent);
+  
+  const fullHtml = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Soccer Team Management API</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">
+        <style>
+            body {
+                box-sizing: border-box;
+                min-width: 200px;
+                max-width: 980px;
+                margin: 0 auto;
+                padding: 45px;
+                background-color: #f6f8fa;
+            }
+            .markdown-body {
+                background-color: white;
+                padding: 45px;
+                border-radius: 6px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+                color: #24292f;
+            }
+            .markdown-body h1 {
+                color: #1a1a1a;
+                border-bottom: 1px solid #eaecef;
+                padding-bottom: 0.3em;
+            }
+            .markdown-body h2 {
+                color: #1a1a1a;
+                border-bottom: 1px solid #eaecef;
+                padding-bottom: 0.3em;
+            }
+            .markdown-body h3 {
+                color: #1a1a1a;
+            }
+            .markdown-body code {
+                background-color: #f6f8fa;
+                border-radius: 6px;
+                padding: 0.2em 0.4em;
+                color: #24292f;
+                font-weight: 600;
+            }
+            .markdown-body pre {
+                background-color: #f6f8fa;
+                border-radius: 6px;
+                padding: 16px;
+                border: 1px solid #d0d7de;
+            }
+            .markdown-body pre code {
+                background-color: transparent;
+                padding: 0;
+                color: #24292f;
+                font-weight: normal;
+            }
+            .markdown-body a {
+                color: #0969da;
+                text-decoration: none;
+            }
+            .markdown-body a:hover {
+                text-decoration: underline;
+            }
+            @media (max-width: 767px) {
+                body {
+                    padding: 15px;
+                }
+                .markdown-body {
+                    padding: 15px;
+                }
+            }
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background-color: #0d1117;
+                }
+                .markdown-body {
+                    background-color: #161b22;
+                    color: #c9d1d9;
+                }
+                .markdown-body h1,
+                .markdown-body h2,
+                .markdown-body h3 {
+                    color: #e6edf3;
+                    border-bottom-color: #30363d;
+                }
+                .markdown-body code {
+                    background-color: rgba(110,118,129,0.4);
+                    color: #e6edf3;
+                }
+                .markdown-body pre {
+                    background-color: #1f2428;
+                    border-color: #30363d;
+                }
+                .markdown-body pre code {
+                    color: #e6edf3;
+                }
+                .markdown-body a {
+                    color: #58a6ff;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="markdown-body">
+            ${htmlContent}
+        </div>
+    </body>
+    </html>
+  `;
+  
+  res.send(fullHtml);
+});
+
+app.use('/v1/auth', authRoutes);
+app.use('/v1/role', roleRoutes);
+app.use('/v1/team', teamRoutes);
+app.use('/v1/player', playerRoutes);
+
 const port = process.env.PORT || 3000;
-
-// Security middleware
-app.set('trust proxy', 1);
-app.use(helmet());
-app.use(express.json({ limit: '10kb' })); // Body size limit
-app.use(express.urlencoded({ extended: true }));
-
-// Request logging
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: { status: false, error: 'Too many requests, please try again later.' }
-});
-app.use(limiter);
-
-// Stricter rate limit for auth routes
-const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // Limit each IP to 10 requests per windowMs
-  message: { status: false, error: 'Too many authentication attempts, please try again later.' }
-});
-
-// CORS configuration - Allow all origins and methods
-app.use(cors({
-  origin: '*',
-  methods: '*',
-  allowedHeaders: '*',
-  credentials: true,
-  maxAge: 86400 // CORS preflight cache for 24 hours
-}));
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
-  });
-});
-
-// Middleware to log requests
-app.use((req, res, next) => {
-  console.log(`Received ${req.method} request for ${req.path}`);
-  next();
-});
-
-// Routes
-app.use('/v1/role', async (req, res, next) => {
-  try {
-    const webRequest = convertToWebRequest(req);
-    const response = await roleRoutes(webRequest);
-    res.status(response.status).json(JSON.parse(await response.text()));
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.use('/v1/auth', authLimiter, async (req, res, next) => {
-  try {
-    const webRequest = convertToWebRequest(req);
-    const response = await authRoutes(webRequest);
-    res.status(response.status).json(JSON.parse(await response.text()));
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.use('/v1/team', async (req, res, next) => {
-  try {
-    const webRequest = convertToWebRequest(req);
-    const response = await teamRoutes(webRequest);
-    res.status(response.status).json(JSON.parse(await response.text()));
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.use('/v1/player', async (req, res, next) => {
-  try {
-    const webRequest = convertToWebRequest(req);
-    const response = await playerRoutes(webRequest);
-    res.status(response.status).json(JSON.parse(await response.text()));
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Root route - API Documentation
-app.get('/', (req, res) => {
-  res.json({
-    name: "Soccer Team Management API",
-    version: "1.0.0",
-    description: "A comprehensive REST API for managing professional soccer teams, players, and staff.",
-    author: {
-      name: "Sohel Datta",
-      email: "soheldatta17@gmail.com",
-      github: "https://github.com/soheldatta17"
-    },
-    documentation: {
-      endpoints: {
-        auth: {
-          signup: {
-            method: "POST",
-            path: "/v1/auth/signup",
-            description: "Register a new user (player, staff, or manager)"
-          },
-          signin: {
-            method: "POST",
-            path: "/v1/auth/signin",
-            description: "Authenticate and receive access token"
-          }
-        },
-        team: {
-          create: {
-            method: "POST",
-            path: "/v1/team",
-            description: "Create a new soccer team"
-          },
-          getAll: {
-            method: "GET",
-            path: "/v1/team",
-            description: "List all teams with pagination"
-          },
-          getDetails: {
-            method: "GET",
-            path: "/v1/team/:teamId",
-            description: "Get detailed information about a specific team"
-          },
-          getPlayers: {
-            method: "GET",
-            path: "/v1/team/:teamId/players",
-            description: "Get all players in a team"
-          }
-        },
-        player: {
-          add: {
-            method: "POST",
-            path: "/v1/player",
-            description: "Add a player to a team with position and number"
-          },
-          update: {
-            method: "PUT",
-            path: "/v1/player/:playerId",
-            description: "Update player information"
-          }
-        }
-      },
-      features: [
-        "Complete Soccer Team Management",
-        "Player Management",
-        "Staff Management",
-        "Role-based Access Control",
-        "JWT Authentication",
-        "RESTful API Architecture",
-        "PostgreSQL Database"
-      ],
-      playerPositions: [
-        "Forward",
-        "Midfielder",
-        "Defender",
-        "Goalkeeper"
-      ],
-      teamRoles: [
-        "Team Manager",
-        "Head Coach",
-        "Assistant Coach",
-        "Team Captain",
-        "Player"
-      ]
-    },
-    repository: "https://github.com/soheldatta17/soccer-prisma-backend",
-    license: "MIT"
-  });
-});
-
-// Error handling middleware
-app.use((err: any, req: any, res: any, next: any) => {
-  console.error(err.stack);
-  
-  // Handle specific known errors
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({
-      status: false,
-      error: 'Validation Error',
-      message: err.message
-    });
-  }
-  
-  if (err.name === 'UnauthorizedError') {
-    return res.status(401).json({
-      status: false,
-      error: 'Unauthorized',
-      message: 'Invalid or expired token'
-    });
-  }
-
-  // Default error response
-  res.status(500).json({ 
-    status: false, 
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ 
-    status: false, 
-    error: 'Not Found',
-    message: 'The requested resource was not found'
-  });
-});
-
-// Start server only in non-production environment
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
-}
+app.listen(port, () => console.log(`Server running on port ${port}`));
 
 export default app;

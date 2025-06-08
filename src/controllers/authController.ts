@@ -10,6 +10,7 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+import { Request } from 'express';
 import { signupUser, signinUser } from "../services/authService";
 import { sendJSON } from "../utils/response";
 import { PrismaClient } from "@prisma/client";
@@ -18,18 +19,18 @@ const prisma = new PrismaClient();
 export async function signupController(req: Request) {
   try {
     const result = await signupUser(req);
-    return sendJSON(200, true, result);
+    return result;
   } catch (err: any) {
-    return sendJSON(400, false, err.message);
+    throw err;
   }
 }
 
 export async function signinController(req: Request) {
   try {
     const result = await signinUser(req);
-    return sendJSON(200, true, result);
+    return result;
   } catch (err: any) {
-    return sendJSON(400, false, err.message);
+    throw err;
   }
 }
 
@@ -46,22 +47,11 @@ export async function getUserById(userId: string) {
     });
 
     if (!user) {
-      return {
-        status: false,
-        message: "User not found",
-      };
+      throw new Error("User not found");
     }
 
-    return {
-      status: true,
-      content: {
-        data: user,
-      },
-    };
+    return user;
   } catch (err: any) {
-    return {
-      status: false,
-      message: err.message || "Something went wrong",
-    };
+    throw err;
   }
 }

@@ -10,6 +10,7 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+import { Request } from 'express';
 import { verifyJWT } from "../validators/jwt";
 
 const rawSecret = process.env.JWT_SECRET;
@@ -21,7 +22,7 @@ if (!rawSecret) {
 const SECRET: string = rawSecret;
 
 export async function authenticate(req: Request): Promise<{ userId: string }> {
-  const authHeader = req.headers.get("authorization");
+  const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     throw new Error("No token provided");
   }

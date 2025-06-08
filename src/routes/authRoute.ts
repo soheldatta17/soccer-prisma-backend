@@ -8,27 +8,38 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+import { Router } from 'express';
 import { signupController, signinController, getUserById } from "../controllers/authController";
 import { authenticate } from "../middlewares/authMiddleware";
 
-export async function authRoutes(req: Request): Promise<Response> {
-  const url = new URL(req.url);
-  const subroute = url.pathname.replace("/v1/auth", "");
-  
+const router = Router();
 
-  if (req.method === "POST" && subroute === "/signup") {
-    return signupController(req);
+router.post('/signup', async (req, res) => {
+  try {
+    const result = await signupController(req);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
+});
 
-  if (req.method === "POST" && subroute === "/signin") {
-    return signinController(req);
+router.post('/signin', async (req, res) => {
+  try {
+    const result = await signinController(req);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  if (req.method === "GET" && subroute === "/me") {
+});
+
+router.get('/me', async (req, res) => {
+  try {
     const { userId } = await authenticate(req);
     const result = await getUserById(userId);
-    return new Response(JSON.stringify(result),{
-status: 200, headers: { "Content-Type": "application/json" } });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  
-  return new Response("Not Found", { status: 404 });
-}
+});
+
+export const authRoutes = router;

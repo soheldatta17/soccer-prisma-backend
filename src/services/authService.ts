@@ -10,6 +10,7 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+import { Request } from 'express';
 import { PrismaClient } from "@prisma/client"; // import PrismaClient class
 const prisma = new PrismaClient(); // instantiate PrismaClient
 import { hashPassword, verifyPassword } from "../validators/hash";
@@ -18,7 +19,7 @@ import {generateId} from "../utils/id"; // Adjust the import path as necessary
 import { signupSchema } from "../validators/authValidate";
 
 export async function signupUser(req: Request) {
-  const body = await req.json() as { name: string; email: string; password: string };
+  const body = req.body;
 
   // Validate request body
   const { error, value } = signupSchema.validate(body);
@@ -54,8 +55,7 @@ export async function signupUser(req: Request) {
 }
 
 export async function signinUser(req: Request) {
-    const body = await req.json() as {email: string; password: string };
-   const { email, password } = body;
+  const { email, password } = req.body;
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error("User not found");
