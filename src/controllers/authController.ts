@@ -11,8 +11,8 @@
  */
 
 import { Request } from 'express';
-import { signupUser, signinUser } from "../services/authService";
-import { sendJSON } from "../utils/response";
+import { signupUser, signinUser } from "../services/authService.js";
+import { sendJSON } from "../utils/response.js";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 

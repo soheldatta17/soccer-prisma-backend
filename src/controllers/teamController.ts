@@ -12,8 +12,8 @@
 
 import { Request } from 'express';
 import { PrismaClient } from "@prisma/client";
-import { sendJSON } from "../utils/response";
-import { generateId } from "../utils/id";
+import { sendJSON } from "../utils/response.js";
+import { generateId } from "../utils/id.js";
 
 const prisma = new PrismaClient();
 

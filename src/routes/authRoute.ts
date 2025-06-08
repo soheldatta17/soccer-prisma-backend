@@ -9,8 +9,8 @@
  */
 
 import { Router } from 'express';
-import { signupController, signinController, getUserById } from "../controllers/authController";
-import { authenticate } from "../middlewares/authMiddleware";
+import { signupController, signinController, getUserById } from "../controllers/authController.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 

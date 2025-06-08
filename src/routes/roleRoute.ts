@@ -8,8 +8,8 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
-import { handleCreateRole, handleGetAllRoles } from "../controllers/roleController";
-import { authenticate } from "../middlewares/authMiddleware";
+import { handleCreateRole, handleGetAllRoles } from "../controllers/roleController.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 export const roleRoutes = async (req: Request): Promise<Response> => {
   const { method, url } = req;

@@ -1,6 +1,6 @@
-import type { Request, Response , NextFunction} from "express";
-import { createRole, getAllRoles } from "../services/roleService";
-import { createRoleSchema } from "../validators/roleValidate";
+import type { Request, Response, NextFunction } from "express";
+import { createRole, getAllRoles } from "../services/roleService.js";
+import { createRoleSchema } from "../validators/roleValidate.js";
 
 const handleCreateRole = async (req: Request) => {
   const body = req.body;

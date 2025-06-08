@@ -9,8 +9,8 @@
  */
 
 import { Request, Response } from 'express';
-import { authenticate } from "../middlewares/authMiddleware";
-import { playerController } from "../controllers/playerController";
+import { authenticate } from "../middlewares/authMiddleware.js";
+import { playerController } from "../controllers/playerController.js";
 
 export async function playerRoutes(req: Request, res: Response): Promise<void> {
   const subroute = req.path.replace("/v1/player", "");

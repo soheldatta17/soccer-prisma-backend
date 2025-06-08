@@ -13,10 +13,10 @@
 import { Request } from 'express';
 import { PrismaClient } from "@prisma/client"; // import PrismaClient class
 const prisma = new PrismaClient(); // instantiate PrismaClient
-import { hashPassword, verifyPassword } from "../validators/hash";
-import { createJWT } from "../validators/jwt";
-import {generateId} from "../utils/id"; // Adjust the import path as necessary
-import { signupSchema } from "../validators/authValidate";
+import { generateId } from "../utils/id.js"; // Adjust the import path as necessary
+import { signupSchema } from "../validators/authValidate.js";
+import { createJWT } from "../validators/jwt.js";
+import { hashPassword, verifyPassword } from "../validators/hash.js";
 
 export async function signupUser(req: Request) {
   const body = req.body;

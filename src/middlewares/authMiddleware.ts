@@ -11,7 +11,9 @@
  */
 
 import { Request } from 'express';
-import { verifyJWT } from "../validators/jwt";
+import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
+import { verifyJWT } from "../validators/jwt.js";
 
 const rawSecret = process.env.JWT_SECRET;
 

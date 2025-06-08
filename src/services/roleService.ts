@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { generateId } from "../utils/id"; // Adjust the import path as necessary
+import { generateId } from "../utils/id.js"; // Adjust the import path as necessary
 const prisma = new PrismaClient();
 
 export const createRole = async (name: string) => {

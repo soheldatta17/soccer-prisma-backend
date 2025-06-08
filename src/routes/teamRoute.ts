@@ -9,8 +9,8 @@
  */
 
 import { Request, Response } from 'express';
-import { authenticate } from "../middlewares/authMiddleware";
-import { teamController } from "../controllers/teamController";
+import { authenticate } from "../middlewares/authMiddleware.js";
+import { teamController } from "../controllers/teamController.js";
 
 export async function teamRoutes(req: Request, res: Response): Promise<void> {
   const subroute = req.path.replace("/v1/team", "");
