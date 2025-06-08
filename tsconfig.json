@@ -12,7 +12,7 @@
     "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "outDir": "dist",
+    "outDir": "public",
     "rootDir": ".",
     "allowJs": true,
     "resolveJsonModule": true,
