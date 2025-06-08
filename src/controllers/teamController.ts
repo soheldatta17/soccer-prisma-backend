@@ -10,6 +10,7 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+import { Request } from 'express';
 import { PrismaClient } from "@prisma/client";
 import { sendJSON } from "../utils/response";
 import { generateId } from "../utils/id";
@@ -19,7 +20,7 @@ const prisma = new PrismaClient();
 export const teamController = {
   async createTeam(req: Request, userId: string) {
     try {
-      const body = await req.json() as { 
+      const body = req.body as { 
         name: string;
         location: string;
         league: string;
@@ -112,6 +113,78 @@ export const teamController = {
       });
 
       return sendJSON(200, true, { data: players });
+    } catch (err: any) {
+      return sendJSON(400, false, err.message);
+    }
+  },
+
+  async updateTeam(req: Request, userId: string) {
+    try {
+      const body = req.body as { 
+        teamId: string;
+        name?: string;
+        location?: string;
+        league?: string;
+        founded?: number;
+      };
+
+      // Check if user owns the team
+      const team = await prisma.team.findUnique({
+        where: { id: body.teamId },
+      });
+
+      if (!team) {
+        return sendJSON(404, false, "Team not found");
+      }
+
+      if (team.ownerId !== userId) {
+        return sendJSON(403, false, "Not authorized to update this team");
+      }
+
+      const updatedTeam = await prisma.team.update({
+        where: { id: body.teamId },
+        data: {
+          name: body.name,
+          location: body.location,
+          league: body.league,
+          founded: body.founded,
+        },
+      });
+
+      return sendJSON(200, true, { data: updatedTeam });
+    } catch (err: any) {
+      return sendJSON(400, false, err.message);
+    }
+  },
+
+  async deleteTeam(req: Request, userId: string) {
+    try {
+      const body = req.body as { teamId: string };
+
+      // Check if user owns the team
+      const team = await prisma.team.findUnique({
+        where: { id: body.teamId },
+      });
+
+      if (!team) {
+        return sendJSON(404, false, "Team not found");
+      }
+
+      if (team.ownerId !== userId) {
+        return sendJSON(403, false, "Not authorized to delete this team");
+      }
+
+      // Delete all players first due to foreign key constraints
+      await prisma.player.deleteMany({
+        where: { teamId: body.teamId },
+      });
+
+      // Then delete the team
+      await prisma.team.delete({
+        where: { id: body.teamId },
+      });
+
+      return sendJSON(200, true, { message: "Team deleted successfully" });
     } catch (err: any) {
       return sendJSON(400, false, err.message);
     }

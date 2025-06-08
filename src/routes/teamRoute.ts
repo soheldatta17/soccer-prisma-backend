@@ -8,47 +8,63 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+import { Request, Response } from 'express';
 import { authenticate } from "../middlewares/authMiddleware";
 import { teamController } from "../controllers/teamController";
 
-export async function teamRoutes(req: Request): Promise<Response> {
-  const url = new URL(req.url);
-  const subroute = url.pathname.replace("/v1/team", "");
+export async function teamRoutes(req: Request, res: Response): Promise<void> {
+  const subroute = req.path.replace("/v1/team", "");
   const method = req.method;
 
   try {
     // Authenticated routes
     if (subroute === "/me/player" && method === "GET") {
       const { userId } = await authenticate(req);
-      return await teamController.getMyTeamsAsPlayer(req, userId);
+      await teamController.getMyTeamsAsPlayer(req, userId);
+      return;
     }
 
     if (subroute === "/me/owner" && method === "GET") {
       const { userId } = await authenticate(req);
-      return await teamController.getMyOwnedTeams(req, userId);
+      await teamController.getMyOwnedTeams(req, userId);
+      return;
     }
 
     if (subroute === "" && method === "POST") {
       const { userId } = await authenticate(req);
-      return await teamController.createTeam(req, userId);
+      await teamController.createTeam(req, userId);
+      return;
     }
 
     if (subroute === "" && method === "GET") {
-      return await teamController.getAllTeams(req);
+      await teamController.getAllTeams(req);
+      return;
     }
 
     // Get Team Players route
-    const playerMatch = url.pathname.match(/^\/v1\/team\/(.+)\/players$/);
+    const playerMatch = req.path.match(/^\/v1\/team\/(.+)\/players$/);
     if (playerMatch && method === "GET") {
       const teamId = String(playerMatch[1]);
-      return await teamController.getTeamPlayers(req, teamId);
+      await teamController.getTeamPlayers(req, teamId);
+      return;
     }
 
-    return new Response("Not Found", { status: 404 });
+    // Update team details
+    if (subroute === "" && method === "PUT") {
+      const { userId } = await authenticate(req);
+      await teamController.updateTeam(req, userId);
+      return;
+    }
+
+    // Delete team
+    if (subroute === "" && method === "DELETE") {
+      const { userId } = await authenticate(req);
+      await teamController.deleteTeam(req, userId);
+      return;
+    }
+
+    res.status(404).json({ status: false, error: "Not Found" });
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({ status: false, error: err.message }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
-    );
+    res.status(401).json({ status: false, error: err.message });
   }
 } 

@@ -2,7 +2,7 @@
  * Player Management Controller
  * Part of Soccer Team Management API
  * 
- * Handles player registration, updates, and player-related operations.
+ * Handles player-related operations like adding players to teams and updating player details.
  * 
  * @author Sohel Datta <soheldatta17@gmail.com>
  * @copyright Copyright (c) 2024 Sohel Datta
@@ -10,6 +10,7 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+import { Request } from 'express';
 import { PrismaClient } from "@prisma/client";
 import { sendJSON } from "../utils/response";
 import { generateId } from "../utils/id";
@@ -19,14 +20,14 @@ const prisma = new PrismaClient();
 export const playerController = {
   async addPlayerToTeam(req: Request, userId: string) {
     try {
-      const body = await req.json() as {
+      const body = req.body as {
         teamId: string;
         roleId: string;
         position: string;
         jerseyNumber?: number;
       };
 
-      // Check if user is already in the team
+      // Check if player already exists in team
       const existingPlayer = await prisma.player.findFirst({
         where: {
           teamId: body.teamId,
@@ -35,10 +36,10 @@ export const playerController = {
       });
 
       if (existingPlayer) {
-        throw new Error("Player already exists in this team");
+        return sendJSON(400, false, "Player already exists in team");
       }
 
-      // Create new player
+      // Create player
       const player = await prisma.player.create({
         data: {
           id: generateId(),
@@ -62,33 +63,33 @@ export const playerController = {
 
   async updatePlayer(req: Request, userId: string, playerId: string) {
     try {
-      const body = await req.json() as {
+      const body = req.body as {
+        roleId?: string;
         position?: string;
         jerseyNumber?: number;
-        roleId?: string;
       };
 
-      // Check if player exists and belongs to the user
-      const existingPlayer = await prisma.player.findFirst({
+      // Check if player exists and belongs to user
+      const player = await prisma.player.findFirst({
         where: {
           id: playerId,
           userId: userId,
         },
       });
 
-      if (!existingPlayer) {
-        throw new Error("Player not found or you don't have permission to update");
+      if (!player) {
+        return sendJSON(404, false, "Player not found or not authorized");
       }
 
       // Update player
-      const player = await prisma.player.update({
+      const updatedPlayer = await prisma.player.update({
         where: {
           id: playerId,
         },
         data: {
+          roleId: body.roleId,
           position: body.position,
           jerseyNumber: body.jerseyNumber,
-          roleId: body.roleId,
         },
         include: {
           team: true,
@@ -96,7 +97,7 @@ export const playerController = {
         },
       });
 
-      return sendJSON(200, true, { data: player });
+      return sendJSON(200, true, { data: updatedPlayer });
     } catch (err: any) {
       return sendJSON(400, false, err.message);
     }
