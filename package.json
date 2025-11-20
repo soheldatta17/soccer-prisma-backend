@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node --experimental-specifier-resolution=node index.js",
     "seed": "tsx prisma/seed.ts",
-    "build": "prisma generate",
+    "build": "tsc && prisma generate",
     "dev": "tsx watch index.ts",
     "debug": "tsx --inspect index.ts",
     "debug-brk": "tsx --inspect-brk index.ts",
@@ -30,7 +30,6 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/marked": "^5.0.2",
     "@types/node": "^20.17.57",
-    "@types/swagger-ui-express": "^4.1.8",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -40,7 +39,6 @@
     "marked": "^15.0.12",
     "prisma": "^6.9.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"

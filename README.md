@@ -368,6 +368,37 @@ Common error responses:
 - **ORM:** Prisma
 - **Authentication:** JWT
 - **API:** RESTful architecture
+- **Documentation:** Swagger UI (serverless-ready)
+
+## 🚀 Deployment
+
+### Quick Deploy to Vercel
+
+This API is optimized for serverless deployment on Vercel:
+
+```bash
+# 1. Push to GitHub
+git push origin main
+
+# 2. Deploy with Vercel CLI
+npm i -g vercel
+vercel --prod
+```
+
+### Environment Variables
+Set these in your Vercel dashboard:
+```bash
+DATABASE_URL="postgresql://username:password@host/database?sslmode=require"
+JWT_SECRET="your-super-secure-jwt-secret-key"
+NODE_ENV="production"
+```
+
+### Production URLs
+- **API Documentation**: `https://your-app.vercel.app/docs`
+- **Health Check**: `https://your-app.vercel.app/health`
+- **API Base**: `https://your-app.vercel.app/v1/`
+
+📖 **Detailed deployment guide**: See [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## 🤝 Contributing
 

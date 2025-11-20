@@ -12,21 +12,33 @@
       "dest": "index.ts"
     },
     {
-      "src": "/(.*)",
+      "src": "/docs",
+      "dest": "index.ts"
+    },
+    {
+      "src": "/swagger",
+      "dest": "index.ts"
+    },
+    {
+      "src": "/health",
+      "dest": "index.ts"
+    },
+    {
+      "src": "/readme",
+      "dest": "index.ts"
+    },
+    {
+      "src": "/",
       "dest": "index.ts"
     }
   ],
   "env": {
     "NODE_ENV": "production"
   },
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  },
-  "git": {
-    "deploymentEnabled": {
-      "env": true
+  "functions": {
+    "index.ts": {
+      "memory": 1024,
+      "maxDuration": 10
     }
   }
 }
