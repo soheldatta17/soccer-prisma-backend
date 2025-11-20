@@ -13,9 +13,10 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node index.js",
+    "start": "node dist/index.js",
+    "start:prod": "NODE_ENV=production node dist/index.js",
     "seed": "tsx prisma/seed.ts",
-    "build": "tsc && prisma generate",
+    "build": "tsc",
     "dev": "tsx watch index.ts",
     "debug": "tsx --inspect index.ts",
     "debug-brk": "tsx --inspect-brk index.ts",
