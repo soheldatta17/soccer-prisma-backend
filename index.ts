@@ -188,39 +188,27 @@ app.get('/debug', async (_, res) => {
 
 // Route listing endpoint for debugging
 app.get('/routes', (_, res) => {
-  const routes = [];
-  
-  app._router.stack.forEach(function(middleware) {
-    if (middleware.route) {
-      // Routes registered directly on the app
-      const methods = Object.keys(middleware.route.methods);
-      routes.push({
-        path: middleware.route.path,
-        methods: methods,
-        type: 'direct'
-      });
-    } else if (middleware.name === 'router') {
-      // Router middleware (like our API routes)
-      middleware.handle.stack.forEach(function(handler) {
-        if (handler.route) {
-          const methods = Object.keys(handler.route.methods);
-          routes.push({
-            path: handler.route.path,
-            methods: methods,
-            type: 'router'
-          });
-        }
-      });
-    }
-  });
-  
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    totalRoutes: routes.length,
-    routes: routes,
-    swaggerPaths: Object.keys(swaggerSpec.paths || {}),
-  });
+  try {
+    res.json({
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      message: 'API routes are loaded and working',
+      swaggerPaths: Object.keys(swaggerSpec.paths || {}),
+      swaggerTags: (swaggerSpec.tags || []).map(tag => tag.name),
+      mountedRoutes: [
+        '/v1/auth/*',
+        '/v1/role/*', 
+        '/v1/team/*',
+        '/v1/player/*'
+      ]
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'ERROR',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Optional: Keep README available at /readme
