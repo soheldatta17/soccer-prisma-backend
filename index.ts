@@ -28,7 +28,27 @@ app.use(express.json());
 app.use(cors());
 
 // Custom Swagger UI implementation for serverless deployment
-app.get('/docs', (_, res) => {
+app.get('/docs', (req, res) => {
+  // Dynamically get the current host
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.get('host');
+  const baseUrl = `${protocol}://${host}`;
+  
+  // Update swagger spec with current host
+  const dynamicSwaggerSpec = {
+    ...swaggerSpec,
+    servers: [
+      {
+        url: baseUrl,
+        description: 'Current server',
+      },
+      {
+        url: 'http://localhost:3000',
+        description: 'Development server',
+      },
+    ],
+  };
+  
   const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -51,7 +71,7 @@ app.get('/docs', (_, res) => {
         <script src="https://unpkg.com/swagger-ui-dist@5.10.3/swagger-ui-bundle.js"></script>
         <script src="https://unpkg.com/swagger-ui-dist@5.10.3/swagger-ui-standalone-preset.js"></script>
         <script>
-            const spec = ${JSON.stringify(swaggerSpec)};
+            const spec = ${JSON.stringify(dynamicSwaggerSpec)};
             SwaggerUIBundle({
                 url: '/swagger',
                 spec: spec,
@@ -109,6 +129,53 @@ app.get('/health', (_, res) => {
     version: '1.0.0',
     environment: process.env.NODE_ENV || 'development'
   });
+});
+
+// Debug endpoint for production troubleshooting
+app.get('/debug', async (_, res) => {
+  try {
+    // Test database connection
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    await prisma.$connect();
+    const userCount = await prisma.user.count();
+    const teamCount = await prisma.team.count();
+    
+    await prisma.$disconnect();
+    
+    res.json({
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        DATABASE_URL: process.env.DATABASE_URL ? '✅ Set' : '❌ Missing',
+        JWT_SECRET: process.env.JWT_SECRET ? '✅ Set' : '❌ Missing',
+      },
+      database: {
+        connected: true,
+        users: userCount,
+        teams: teamCount,
+      },
+      api: {
+        routes: ['v1/auth', 'v1/team', 'v1/player', 'v1/role'],
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'ERROR',
+      timestamp: new Date().toISOString(),
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        DATABASE_URL: process.env.DATABASE_URL ? '✅ Set' : '❌ Missing',
+        JWT_SECRET: process.env.JWT_SECRET ? '✅ Set' : '❌ Missing',
+      },
+      database: {
+        connected: false,
+        error: error.message,
+      }
+    });
+  }
 });
 
 // Optional: Keep README available at /readme

@@ -34,7 +34,7 @@ const options = {
         description: 'Development server',
       },
       {
-        url: 'https://soccer-prisma-backend.vercel.app',
+        url: 'https://soccer-prisma-backend-frw3ocun1-soheldatta17s-projects.vercel.app',
         description: 'Production server',
       },
     ],

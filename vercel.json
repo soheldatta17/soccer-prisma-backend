@@ -24,6 +24,10 @@
       "dest": "index.ts"
     },
     {
+      "src": "/debug",
+      "dest": "index.ts"
+    },
+    {
       "src": "/readme",
       "dest": "index.ts"
     },
