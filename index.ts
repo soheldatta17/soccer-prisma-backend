@@ -92,7 +92,7 @@ app.get('/docs', (req, res) => {
                 showCommonExtensions: true,
                 defaultModelExpandDepth: 3,
                 defaultModelsExpandDepth: 3,
-                docExpansion: 'list',
+                docExpansion: 'full',
                 supportedSubmitMethods: ['get', 'put', 'post', 'delete', 'options', 'head', 'patch'],
                 onComplete: function() {
                     console.log('Swagger UI loaded successfully');
