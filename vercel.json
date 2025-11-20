@@ -28,6 +28,10 @@
       "dest": "index.ts"
     },
     {
+      "src": "/routes",
+      "dest": "index.ts"
+    },
+    {
       "src": "/readme",
       "dest": "index.ts"
     },

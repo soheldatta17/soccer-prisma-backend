@@ -21,11 +21,17 @@ import path from 'path';
 import fs from 'fs';
 import { marked } from 'marked';
 
+console.log('🚀 Starting Soccer Team Management API...');
+console.log('📁 Loading routes...');
+
 const app = express();
 
 // Only essential middleware
 app.use(express.json());
 app.use(cors());
+
+console.log('✅ Middleware configured');
+console.log('📖 Setting up Swagger UI...');
 
 // Custom Swagger UI implementation for serverless deployment
 app.get('/docs', (req, res) => {
@@ -107,10 +113,12 @@ app.get('/docs', (req, res) => {
   `;
   res.setHeader('Content-Type', 'text/html');
   res.send(html);
+  console.log('📄 Swagger UI served successfully');
 });
 
 // Serve swagger spec as JSON
 app.get('/swagger', (_, res) => {
+  console.log('📋 Serving Swagger JSON spec');
   res.setHeader('Content-Type', 'application/json');
   res.json(swaggerSpec);
 });
@@ -176,6 +184,43 @@ app.get('/debug', async (_, res) => {
       }
     });
   }
+});
+
+// Route listing endpoint for debugging
+app.get('/routes', (_, res) => {
+  const routes = [];
+  
+  app._router.stack.forEach(function(middleware) {
+    if (middleware.route) {
+      // Routes registered directly on the app
+      const methods = Object.keys(middleware.route.methods);
+      routes.push({
+        path: middleware.route.path,
+        methods: methods,
+        type: 'direct'
+      });
+    } else if (middleware.name === 'router') {
+      // Router middleware (like our API routes)
+      middleware.handle.stack.forEach(function(handler) {
+        if (handler.route) {
+          const methods = Object.keys(handler.route.methods);
+          routes.push({
+            path: handler.route.path,
+            methods: methods,
+            type: 'router'
+          });
+        }
+      });
+    }
+  });
+  
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    totalRoutes: routes.length,
+    routes: routes,
+    swaggerPaths: Object.keys(swaggerSpec.paths || {}),
+  });
 });
 
 // Optional: Keep README available at /readme
@@ -346,12 +391,32 @@ app.get('/readme', (_, res) => {
   res.send(fullHtml);
 });
 
+console.log('🔗 Mounting API routes...');
+
 app.use('/v1/auth', authRoutes);
+console.log('✅ Auth routes mounted at /v1/auth');
+
 app.use('/v1/role', roleRoutes);
+console.log('✅ Role routes mounted at /v1/role');
+
 app.use('/v1/team', teamRoutes);
+console.log('✅ Team routes mounted at /v1/team');
+
 app.use('/v1/player', playerRoutes);
+console.log('✅ Player routes mounted at /v1/player');
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.listen(port, () => {
+  console.log('🎉 Server running on port', port);
+  console.log('📡 API Endpoints:');
+  console.log('   📄 Documentation: /docs');
+  console.log('   🔍 Health Check: /health');
+  console.log('   🐛 Debug Info: /debug');
+  console.log('   🔐 Auth API: /v1/auth/*');
+  console.log('   ⚽ Team API: /v1/team/*');
+  console.log('   👤 Player API: /v1/player/*');
+  console.log('   🎭 Role API: /v1/role/*');
+  console.log('🌟 Ready for requests!');
+});
 
 export default app;

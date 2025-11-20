@@ -372,4 +372,11 @@ const options = {
   ],
 };
 
+console.log('📋 Swagger configuration created');
+console.log('🔍 API paths to scan:', options.apis);
+
 export const swaggerSpec = swaggerJsdoc(options);
+
+console.log('✅ Swagger spec generated');
+console.log('📊 Found paths:', Object.keys(swaggerSpec.paths || {}));
+console.log('🏷️  Found tags:', (swaggerSpec.tags || []).map(tag => tag.name));
