@@ -7,8 +7,13 @@
  * @repository https://github.com/soheldatta17/soccer-prisma-backend
  */
 
+// Load environment variables first
+import 'dotenv/config';
+
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './src/config/swagger.js';
 import { roleRoutes } from "./src/routes/roleRoute.js";
 import { authRoutes } from "./src/routes/authRoute.js";
 import { teamRoutes } from "./src/routes/teamRoute.js";
@@ -23,8 +28,27 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Basic routes
+// Swagger API Documentation
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Soccer API Documentation',
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayOperationId: false,
+    filter: true,
+    showExtensions: true,
+    showCommonExtensions: true,
+  },
+}));
+
+// Basic routes - Redirect root to Swagger docs
 app.get('/', (_, res) => {
+  res.redirect('/docs');
+});
+
+// Optional: Keep README available at /readme
+app.get('/readme', (_, res) => {
   const readmePath = path.join(process.cwd(), 'README.md');
   const readmeContent = fs.readFileSync(readmePath, 'utf-8');
   const htmlContent = marked(readmeContent);
@@ -35,7 +59,7 @@ app.get('/', (_, res) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Soccer Team Management API</title>
+        <title>Soccer Team Management API - Documentation</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">
         <style>
             body {
@@ -52,6 +76,43 @@ app.get('/', (_, res) => {
                 border-radius: 6px;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.12);
                 color: #24292f;
+            }
+            .api-docs-banner {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 30px;
+                text-align: center;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+            .api-docs-banner h2 {
+                margin: 0 0 10px 0;
+                color: white;
+                border: none;
+                padding: 0;
+                font-size: 24px;
+            }
+            .api-docs-banner p {
+                margin: 0 0 15px 0;
+                opacity: 0.9;
+            }
+            .docs-button {
+                display: inline-block;
+                background-color: rgba(255,255,255,0.2);
+                color: white;
+                padding: 12px 24px;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: 600;
+                transition: background-color 0.3s ease;
+                border: 2px solid rgba(255,255,255,0.3);
+                margin-right: 10px;
+            }
+            .docs-button:hover {
+                background-color: rgba(255,255,255,0.3);
+                color: white;
+                text-decoration: none;
             }
             .markdown-body h1 {
                 color: #1a1a1a;
@@ -99,6 +160,9 @@ app.get('/', (_, res) => {
                 .markdown-body {
                     padding: 15px;
                 }
+                .api-docs-banner {
+                    padding: 15px;
+                }
             }
             @media (prefers-color-scheme: dark) {
                 body {
@@ -107,6 +171,9 @@ app.get('/', (_, res) => {
                 .markdown-body {
                     background-color: #161b22;
                     color: #c9d1d9;
+                }
+                .api-docs-banner {
+                    background: linear-gradient(135deg, #4c6ef5 0%, #9c36b5 100%);
                 }
                 .markdown-body h1,
                 .markdown-body h2,
@@ -133,6 +200,12 @@ app.get('/', (_, res) => {
     </head>
     <body>
         <div class="markdown-body">
+            <div class="api-docs-banner">
+                <h2>🚀 Soccer Team Management API</h2>
+                <p>Interactive API Documentation & Project Information</p>
+                <a href="/docs" class="docs-button">Interactive API Docs →</a>
+                <a href="/" class="docs-button">← Back to API</a>
+            </div>
             ${htmlContent}
         </div>
     </body>
