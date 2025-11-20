@@ -32,12 +32,34 @@ model Team {
 }
 
 model Role {
-  id         String    @id  @default(cuid())
-  name       String    @unique @db.VarChar(64)
-  scopes     String[]  @db.Text
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  players    Player[]
+  id          String         @id  @default(cuid())
+  name        String         @unique @db.VarChar(64)
+  description String?        @db.Text
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  players     Player[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String         @id  @default(cuid())
+  name        String         @unique @db.VarChar(64)
+  description String?        @db.Text
+  category    String?        @db.VarChar(32) // e.g., "team", "player", "admin"
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id  @default(cuid())
+  roleId       String
+  permissionId String
+  created_at   DateTime   @default(now())
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
 }
 
 model Player {

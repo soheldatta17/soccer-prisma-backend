@@ -1,5 +1,17 @@
-import type { Request, Response, NextFunction } from "express";
-import { createRole, getAllRoles } from "../services/roleService.js";
+/**
+ * Role Controller
+ * Part of Soccer Team Management API
+ * 
+ * Handles role-related HTTP requests with normalized permissions.
+ * 
+ * @author Sohel Datta <soheldatta17@gmail.com>
+ * @copyright Copyright (c) 2024 Sohel Datta
+ * @license MIT
+ * @repository https://github.com/soheldatta17/soccer-prisma-backend
+ */
+
+import type { Request } from "express";
+import { createRole, getAllRoles, getAllPermissions } from "../services/roleService.js";
 import { createRoleSchema } from "../validators/roleValidate.js";
 
 const handleCreateRole = async (req: Request) => {
@@ -8,13 +20,13 @@ const handleCreateRole = async (req: Request) => {
   if (error) {
     return {
       status: false,
-      message: error.message
-
+      message: error.message,
+      statusCode: 400
     };
   }
 
   try {
-    const role = await createRole(body.name);
+    const role = await createRole(body.name, body.description);
     return {
       status: true,
       content: { data: role },
@@ -32,17 +44,22 @@ const handleCreateRole = async (req: Request) => {
 const handleGetAllRoles = async () => {
   try {
     const roles = await getAllRoles();
-    const data = roles;
+    
+    // Transform the data to include permissions in a cleaner format
+    const transformedRoles = roles.map(role => ({
+      ...role,
+      permissions: role.permissions.map(rp => rp.permission)
+    }));
 
     return {
       status: true,
       content: {
         meta: {
-          total: data.length,
-           pages: 1,
-           page: 1
-         },
-        data: data
+          total: transformedRoles.length,
+          pages: 1,
+          page: 1
+        },
+        data: transformedRoles
       },
       statusCode: 200
     };
@@ -55,4 +72,29 @@ const handleGetAllRoles = async () => {
   }
 };
 
-export { handleCreateRole, handleGetAllRoles };
+const handleGetAllPermissions = async () => {
+  try {
+    const permissions = await getAllPermissions();
+
+    return {
+      status: true,
+      content: {
+        meta: {
+          total: permissions.length,
+          pages: 1,
+          page: 1
+        },
+        data: permissions
+      },
+      statusCode: 200
+    };
+  } catch (err: any) {
+    return {
+      status: false,
+      message: err.message || "Something went wrong",
+      statusCode: 500
+    };
+  }
+};
+
+export { handleCreateRole, handleGetAllRoles, handleGetAllPermissions };

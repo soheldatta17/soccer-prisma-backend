@@ -188,15 +188,45 @@ const options = {
             permissions: {
               type: 'array',
               items: {
-                type: 'string',
+                $ref: '#/components/schemas/Permission',
               },
               description: 'Role permissions',
-              example: ['read_team', 'manage_players'],
             },
             created_at: {
               type: 'string',
               format: 'date-time',
               description: 'Role creation timestamp',
+            },
+          },
+        },
+        Permission: {
+          type: 'object',
+          required: ['name'],
+          properties: {
+            id: {
+              type: 'string',
+              description: 'Permission ID',
+              example: 'perm_123abc',
+            },
+            name: {
+              type: 'string',
+              description: 'Permission name',
+              example: 'team:read',
+            },
+            description: {
+              type: 'string',
+              description: 'Permission description',
+              example: 'View team information',
+            },
+            category: {
+              type: 'string',
+              description: 'Permission category',
+              example: 'team',
+            },
+            created_at: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Permission creation timestamp',
             },
           },
         },

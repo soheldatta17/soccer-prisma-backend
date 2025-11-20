@@ -9,7 +9,7 @@
  */
 
 import { Router } from 'express';
-import { handleCreateRole, handleGetAllRoles } from "../controllers/roleController.js";
+import { handleCreateRole, handleGetAllRoles, handleGetAllPermissions } from "../controllers/roleController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = Router();
@@ -132,6 +132,50 @@ router.post('/', async (req, res) => {
       status: result.status,
       content: result.content,
       error: result.message
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /v1/role/permissions:
+ *   get:
+ *     tags: [Roles]
+ *     summary: Get all permissions
+ *     description: Retrieve all available permissions in the system
+ *     responses:
+ *       200:
+ *         description: Permissions retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 content:
+ *                   type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Permission'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/permissions', async (req, res) => {
+  try {
+    const result = await handleGetAllPermissions();
+    res.status(result.statusCode || 200).json({
+      status: result.status,
+      content: result.content
     });
   } catch (error) {
     res.status(500).json({ status: false, error: error.message });
